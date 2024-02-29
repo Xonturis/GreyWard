@@ -1,2 +1,4 @@
 api-key:
   1fichier: "your api key"
+download:
+  path: "absolute path of the download destination folder"

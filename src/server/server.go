@@ -17,12 +17,43 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/xonturis/greyward/src/downloader"
 	"github.com/xonturis/greyward/src/vlc"
 )
+
+func startStreaming(c *gin.Context) {
+	fmt.Println("qsdf")
+	err := vlc.Start(c.Query("url"))
+
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"error": err.Error(),
+		})
+	} else {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "successful",
+		})
+	}
+}
+
+func downloadFile(c *gin.Context) {
+	err := downloader.DownloadFile(c.Query("url"))
+
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"error": err.Error(),
+		})
+	} else {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "successful",
+		})
+	}
+}
 
 func StartGreywardServer() {
 	gin.SetMode("release")
@@ -30,18 +61,7 @@ func StartGreywardServer() {
 	r.Use(cors.New(cors.Config{
 		AllowAllOrigins: true,
 	}))
-	r.GET("/start", func(c *gin.Context) {
-		err := vlc.Start(c.Query("url"))
-
-		if err != nil {
-			c.JSON(http.StatusOK, gin.H{
-				"error": err.Error(),
-			})
-		} else {
-			c.JSON(http.StatusOK, gin.H{
-				"message": "successful",
-			})
-		}
-	})
+	r.GET("/start", startStreaming)
+	r.GET("/download", downloadFile)
 	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
