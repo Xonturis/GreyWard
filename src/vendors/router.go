@@ -20,7 +20,9 @@ import (
 	"errors"
 	"net/url"
 
+	"github.com/spf13/viper"
 	unfichier "github.com/xonturis/greyward/src/vendors/1fichier"
+	"github.com/xonturis/greyward/src/vendors/alldebrid"
 )
 
 func GetVendor(link string) (Vendor, error) {
@@ -30,13 +32,18 @@ func GetVendor(link string) (Vendor, error) {
 	}
 
 	host := url.Host
-	url.Query().Del("af")
 
-	switch host {
-	case "1fichier.com":
-		return unfichier.Vendor1Fichier{Link: url.String()}, nil
-	default:
-		return nil, errors.New("couldn't find corresponding vendor")
+	useAlldebrid := viper.GetBool("use-alldebrid")
+
+	if useAlldebrid {
+		return alldebrid.VendorAlldebrid{Link: url.String()}, nil
+	} else {
+		switch host {
+		case "1fichier.com":
+			return unfichier.Vendor1Fichier{Link: url.String()}, nil
+		default:
+			return nil, errors.New("couldn't find corresponding vendor")
+		}
 	}
 
 }

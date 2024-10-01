@@ -17,7 +17,6 @@
 package server
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-contrib/cors"
@@ -27,7 +26,6 @@ import (
 )
 
 func startStreaming(c *gin.Context) {
-	fmt.Println("qsdf")
 	err := vlc.Start(c.Query("url"))
 
 	if err != nil {
